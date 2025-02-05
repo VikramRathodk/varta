@@ -1,0 +1,4 @@
+<resources>
+        <attr name="colorReceiveChatBubble" format="color" />
+        <attr name="colorSearchviewBackground" format="color" />
+</resources>
