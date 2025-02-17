@@ -44,6 +44,15 @@ class LoginPreference @Inject constructor(
         sharedPreferences.edit().putBoolean(LOGGEDIN, boolean).apply()
     }
 
+    fun setFirebaseToken(token: String?): String? {
+        sharedPreferences.edit().putString(FIREBASE_TOKEN, token).apply()
+        return token
+    }
+    fun getFirebaseToken(): String? {
+        return sharedPreferences.getString(FIREBASE_TOKEN, null)
+    }
+
+
 
     companion object {
         const val SHARED_PREF_NAME = "SHARED_PREF_NAME"
@@ -51,5 +60,6 @@ class LoginPreference @Inject constructor(
         const val USER_ID = "userId"
         const val LOGIN_SESSION_STATUS = "LOGIN_SESSION_STATUS"
         const val LOGGEDIN = "isLoggedIn"
+        const val FIREBASE_TOKEN = "firebase_token"
     }
 }

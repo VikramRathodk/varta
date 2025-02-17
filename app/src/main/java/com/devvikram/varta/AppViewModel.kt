@@ -21,6 +21,7 @@ import com.devvikram.varta.data.room.repository.ParticipantRepository
 import com.devvikram.varta.workers.WorkerManagers
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -222,4 +223,26 @@ class AppViewModel
         }
         _isUserLoggedIn.postValue(status)
     }
+
+    fun createAndGetFirebaseToken() {
+        val savedToken = loginPreferences.getFirebaseToken()
+        Log.d(TAG, "createAndGetFirebaseToken: $savedToken")
+
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    println("Fetching FCM token failed: ${task.exception}")
+                    return@addOnCompleteListener
+                }
+                val newToken = task.result
+
+                if (savedToken.isNullOrEmpty() || savedToken != newToken) {
+                    println("New FCM Token: $newToken")
+                    loginPreferences.setFirebaseToken(newToken)
+                } else {
+                    println("FCM Token is up-to-date, no need to update.")
+                }
+            }
+    }
+
 }

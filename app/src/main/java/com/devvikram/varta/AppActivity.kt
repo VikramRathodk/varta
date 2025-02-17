@@ -29,6 +29,7 @@ class AppActivity : ComponentActivity() {
                         if (isLoggedIn.value) {
                             AppNavigation(navController,appViewModel)
                             appViewModel.listenToConversations()
+                            appViewModel.createAndGetFirebaseToken()
                         } else {
                             LoginNavigation(navController,appViewModel)
                         }
