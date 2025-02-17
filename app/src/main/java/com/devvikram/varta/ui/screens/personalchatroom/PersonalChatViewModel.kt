@@ -72,12 +72,12 @@ class PersonalChatViewModel @Inject constructor(
 
     fun sendMessage(message: String){
         println("personal: sendMessage: $message")
-        val senderUserId = loginPreference.getUserId().toInt()
+        val senderUserId = loginPreference.getUserId()
         viewModelScope.launch {
             val existingConversation =
                 conversationRepository.getConversationById(_conversationId.value)
             val receiverUserId = _receiverUserProfile.value?.userId.toString()
-            val participantIds = listOf(senderUserId.toString(), receiverUserId)
+            val participantIds = listOf(senderUserId, receiverUserId)
 
             if(existingConversation != null){
                 // Step 1 : create a new message with message type text
@@ -89,7 +89,7 @@ class PersonalChatViewModel @Inject constructor(
                     messageId = "",
                     conversationId = existingConversation.conversationId,
                     text = message,
-                    senderId = senderUserId.toString(),
+                    senderId = senderUserId,
                     messageType = MessageType.TEXT.toString(),
                     timestamp = System.currentTimeMillis(),
                 )
@@ -102,7 +102,7 @@ class PersonalChatViewModel @Inject constructor(
                     messageId = "",
                     conversationId = "",
                     text = message,
-                    senderId = senderUserId.toString(),
+                    senderId = senderUserId,
                     messageType = MessageType.TEXT.toString(),
                     timestamp = System.currentTimeMillis(),
                 )
@@ -110,9 +110,9 @@ class PersonalChatViewModel @Inject constructor(
 
                 val conversation = RoomConversation(
                     conversationId = "",
-                    userId = receiverUserId.toInt(),
+                    userId = receiverUserId,
                     type = "P",
-                    createdBy = senderUserId.toString(),
+                    createdBy = senderUserId,
                     createdAt = System.currentTimeMillis(),
                     participantIds = participantIds
                 )

@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.firebase.auth.ktx)
 
     // JUnit
     testImplementation(libs.junit)

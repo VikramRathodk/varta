@@ -20,7 +20,7 @@ class WorkerManagers private constructor(private val context: Context) {
     }
 
     fun syncContacts() {
-        val workRequest = OneTimeWorkRequestBuilder<TestWorker>()
+        val workRequest = OneTimeWorkRequestBuilder<SyncContacts>()
             .build()
 
         WorkManager.getInstance(context)

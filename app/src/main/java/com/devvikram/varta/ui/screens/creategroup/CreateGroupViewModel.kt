@@ -35,7 +35,7 @@ class CreateGroupViewModel @Inject constructor(
 
             val conversation = RoomConversation(
                 conversationId = "",
-                userId = 0,
+                userId = "",
                 type = "G",
                 name = groupName,
                 createdAt = System.currentTimeMillis(),

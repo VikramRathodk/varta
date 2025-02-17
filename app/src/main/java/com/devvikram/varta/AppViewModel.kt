@@ -85,7 +85,7 @@ class AppViewModel
 
                                     // **Update local conversation**
 
-                                    conversationRepository.insertConversation(ModelMapper.mapToRoomConversation(conversation, loginPreferences.getUserId().toInt()))
+                                    conversationRepository.insertConversation(ModelMapper.mapToRoomConversation(conversation, loginPreferences.getUserId()))
 
                                     // **Update local participants**
                                     val localParticipants = participantRepository.getParticipantsByConversationId(conversation.conversationId)
@@ -128,7 +128,7 @@ class AppViewModel
                                 conversationRepository.insertConversation(
                                     ModelMapper.mapToRoomConversation(
                                         conversation,
-                                        loginPreferences.getUserId().toInt()
+                                        loginPreferences.getUserId()
                                     )
                                 )
 

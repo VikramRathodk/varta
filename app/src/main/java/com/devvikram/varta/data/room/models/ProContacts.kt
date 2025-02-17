@@ -15,7 +15,7 @@ data class ProContacts(
     @PrimaryKey
     @ColumnInfo(name = "user_id")
     @SerializedName("id")
-    val userId: Int = 0,
+    val userId: String = "",
 
     @ColumnInfo(name = "name")
     @SerializedName("name")
@@ -40,14 +40,6 @@ data class ProContacts(
     @ColumnInfo(name = "user_status")
     @SerializedName("userStatus")
     val userStatus: Boolean = false,
-
-    @ColumnInfo(name = "companies")
-    @SerializedName("companies")
-    val companies: List<Company> = emptyList(),
-
-    @ColumnInfo(name = "projects")
-    @SerializedName("projects")
-    val projects: List<Project> = emptyList(),
 
     @ColumnInfo(name = "local_profile_pic_path")
     val localProfilePicPath: String = "",

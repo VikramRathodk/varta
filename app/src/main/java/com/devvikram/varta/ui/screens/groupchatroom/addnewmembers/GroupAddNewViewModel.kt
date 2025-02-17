@@ -49,7 +49,7 @@ class GroupAddNewViewModel @Inject constructor(
                 contacts
             ) { alreadyGroupParticipants, contactsList ->
                 contactsList.map { contact ->
-                    val alreadyAdded = alreadyGroupParticipants.any { it.userId == contact.userId.toString() }
+                    val alreadyAdded = alreadyGroupParticipants.any { it.userId == contact.userId }
 
                     Log.d(TAG, "handleContacts: Contact ${contact.name} - Already Added: $alreadyAdded")
 

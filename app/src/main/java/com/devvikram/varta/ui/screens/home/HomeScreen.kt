@@ -62,6 +62,9 @@ fun HomeScreen(
                 }
             },
             bottomBar = {
+
+
+
                 UserDetailsBottomView(modifier = Modifier.navigationBarsPadding(),isDarkMode = isDarkMode,currentLoggedUser, onLogout = {
                     appViewModel.updateLoginStatus(false)
                 })

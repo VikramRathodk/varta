@@ -8,7 +8,8 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.devvikram.varta.config.constants.LoginPreference
 import com.devvikram.varta.data.room.repository.ContactRepository
-import com.devvikram.varta.workers.TestWorker
+import com.devvikram.varta.workers.SyncContacts
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.HiltAndroidApp
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -35,17 +36,19 @@ class MyApplication : Application(), Configuration.Provider {
 
 class CustomWorkerFactory @Inject constructor(
     private val contactRepository: ContactRepository,
-    private val loginPreference: LoginPreference
+    private val loginPreference: LoginPreference,
+    private val firebaseFirestore: FirebaseFirestore
 ) : WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
-    ): ListenableWorker = TestWorker(
+    ): ListenableWorker = SyncContacts(
         appContext = appContext,
         workerParams = workerParameters,
         contactRepository = contactRepository,
-        loginPreference = loginPreference
+        loginPreference = loginPreference,
+        firebaseFirestore = firebaseFirestore
     )
 
 }

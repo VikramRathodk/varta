@@ -1,31 +1,32 @@
 package com.devvikram.varta.ui.screens.login
 
-import android.content.ContentValues.TAG
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.devvikram.varta.config.constants.LoginPreference
-import com.devvikram.varta.data.retrofit.RetrofitInstance
+import com.devvikram.varta.data.config.ModelMapper
+import com.devvikram.varta.data.firebase.models.FContact
 import com.devvikram.varta.data.retrofit.models.LoginInformation
 import com.devvikram.varta.data.retrofit.models.LoginResponse
 import com.devvikram.varta.data.retrofit.models.RegisterModel
 import com.devvikram.varta.data.room.repository.ContactRepository
 import com.devvikram.varta.workers.WorkerManagers
-import com.google.gson.Gson
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginPreference: LoginPreference,
     private val contactRepository: ContactRepository,
-    @ApplicationContext private val applicationContext: Context
+    @ApplicationContext private val applicationContext: Context,
+    private val firebaseAuth : FirebaseAuth,
+    private val firestore: FirebaseFirestore
 
 ) : ViewModel() {
 
@@ -39,73 +40,57 @@ class LoginViewModel @Inject constructor(
 
 
     fun login(loginInformation: LoginInformation) {
-        if (!validInput(loginInformation,true)) {
+        if (!validInput(loginInformation, true)) {
             return
         }
-        Log.d(TAG, "login:  $loginInformation")
-        viewModelScope.launch {
-            _loginUiState.value = LoginUiState.Loading
-            try {
-                val response: Response<LoginResponse> =
-                    RetrofitInstance.getApiService().login(loginInformation)
 
-                if (response.isSuccessful) {
-                    val loginResponse: LoginResponse? = response.body()
-                    if (loginResponse != null) {
-                        if (loginResponse.success) {
+        _loginUiState.value = LoginUiState.Loading
 
-                            _loginUiState.value = LoginUiState.Success(loginResponse)
+        firebaseAuth.signInWithEmailAndPassword(loginInformation.email, loginInformation.password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = firebaseAuth.currentUser
+                    user?.let {
+                        val userDocRef = firestore.collection(
+                            com.devvikram.varta.data.firebase.config.Firebase.FIREBASE_USER_COLLECTION
+                        ).document(it.uid)
 
-                            val userInformation = loginResponse.data?.userData
-                            val sessionId = loginResponse.data?.sessionId
-                            val sessionStatus = loginResponse.data!!.sessionStatus
+                        userDocRef.get().addOnSuccessListener { documentSnapshot ->
+                            if (documentSnapshot.exists()) {
+                                val userData = documentSnapshot.data
 
-                            if (userInformation != null) {
+                                val fContact = documentSnapshot.toObject(FContact::class.java)
+
+                                if (fContact != null) {
+                                    val proContact = ModelMapper.mapToFContact(fContact)
+                                    viewModelScope.launch {
+                                        contactRepository.insertUserContact(proContact)
+                                    }
+                                }
+                                _loginUiState.value = LoginUiState.Success(
+                                    LoginResponse(success = true, message = "Login successful", data = userData)
+                                )
                                 loginPreference.saveLoginInfo(
-                                    userId = userInformation.userId.toString(),
-                                    loginSessionId = sessionId.toString(),
-                                    loginSessionStatus = sessionStatus
+                                    userId = it.uid,
+                                    loginSessionId = it.uid,
+                                    loginSessionStatus = true
                                 )
-
-                                contactRepository.insertUserContact(userInformation)
-
                             } else {
-                                _loginUiState.value = LoginUiState.Error(
-                                    loginResponse.message
-                                        ?: "User information is unavailable, please try again"
-                                )
+                                _loginUiState.value = LoginUiState.Error("User data not found")
                             }
-                        } else {
-                            _loginUiState.value = LoginUiState.Error(
-                                loginResponse.message ?: "Invalid credentials , please try again"
-                            )
+                        }.addOnFailureListener { e ->
+                            _loginUiState.value = LoginUiState.Error(e.localizedMessage ?: "Failed to fetch user data")
                         }
-                    } else {
-                        _loginUiState.value =
-                            LoginUiState.Error("Invalid credentials , please try again")
                     }
-                } else {
-                    val errorResponse = response.errorBody()?.string()
-                    val gson = Gson()
-                    val apiError = gson.fromJson(errorResponse, LoginResponse::class.java)
-                    _loginUiState.value = LoginUiState.Error(apiError.message)
                 }
 
-            } catch (exception: Exception) {
-                Log.d(TAG, "login: $exception")
-                exception.printStackTrace()
-                _loginUiState.value = when (exception) {
-                    is java.net.UnknownHostException -> LoginUiState.Error("No Internet connection. Please check your network settings.")
-                    is java.net.SocketTimeoutException -> LoginUiState.Error("Request timed out. Please try again.")
-                    is java.net.ConnectException -> LoginUiState.Error("Unable to connect to the server. Please check your internet connection.")
-                    is java.net.NoRouteToHostException -> LoginUiState.Error("No route to host. Please check your internet connection.")
-                    is java.net.ProtocolException -> LoginUiState.Error("Protocol error. Please try again.")
-                    is java.net.UnknownServiceException -> LoginUiState.Error("Unknown service error. Please try again.")
-                    else -> LoginUiState.Error("An unexpected error occurred, please try again.")
+                else {
+                    _loginUiState.value = LoginUiState.Error(task.exception?.localizedMessage ?: "Login failed")
                 }
             }
-        }
     }
+
+
 
     private fun validInput(loginInformation: LoginInformation, isLogin : Boolean): Boolean {
         if(isLogin){
@@ -143,58 +128,62 @@ class LoginViewModel @Inject constructor(
         return true
     }
 
-    fun logout() {
-        loginPreference.clearSharedPref()
-        viewModelScope.launch {
-            contactRepository.clearContact()
-        }
-        _loginUiState.value = LoginUiState.Ideal
-    }
 
     fun resetLoginState() {
         _loginUiState.value = LoginUiState.Ideal
     }
 
     fun register(registerInformation: RegisterModel) {
-        Log.d(TAG, "register:  $registerInformation")
-        viewModelScope.launch {
-            _registerUiState.value = RegisterUiState.Loading
-            try {
-                val response: Response<LoginResponse> =
-                    RetrofitInstance.getBCSTEPApiService().register(registerInformation)
-                if (response.isSuccessful) {
-                    val registerResponse: LoginResponse? = response.body()
-                    if (registerResponse!= null) {
-                        if (registerResponse.success) {
-                            _registerUiState.value = RegisterUiState.Success(registerResponse)
-                        } else {
-                            _registerUiState.value = RegisterUiState.Error(
-                                registerResponse.message
-                                   ?: "Registration failed, please try again"
+        if (!validInput(LoginInformation(registerInformation.username, registerInformation.password), false)) {
+            return
+        }
+
+        _registerUiState.value = RegisterUiState.Loading
+
+        firebaseAuth.createUserWithEmailAndPassword(
+            registerInformation.username,
+            registerInformation.password
+        ).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val user = firebaseAuth.currentUser
+                user?.let {
+                    val userCollection = firestore.collection(
+                        com.devvikram.varta.data.firebase.config.Firebase.FIREBASE_USER_COLLECTION
+                    )
+
+                    val userData = mapOf(
+                        "userId" to it.uid,
+                        "name" to registerInformation.username,
+                        "email" to registerInformation.username,
+                        "gender" to registerInformation.gender,
+                        "createdAt" to System.currentTimeMillis(),
+                        "profilePic" to "",
+                        "userStatus" to true,
+
+                    )
+
+                    userCollection.document(it.uid).set(userData)
+                        .addOnSuccessListener {
+                            _registerUiState.value = RegisterUiState.Success(
+                                LoginResponse(success = true, message = "Registration successful", data = null)
+                            )
+                            loginPreference.saveLoginInfo(
+                                userId = user.uid,
+                                loginSessionId = user.uid,
+                                loginSessionStatus = true
                             )
                         }
-                    } else {
-                        _registerUiState.value = RegisterUiState.Error(
-                            "Registration failed, please try again"
-                        )
-                    }
+                        .addOnFailureListener { e ->
+                            _registerUiState.value = RegisterUiState.Error(e.localizedMessage ?: "Failed to save user data")
+                        }
                 }
-
-            } catch (exception: Exception) {
-                Log.d(TAG, "login: $exception")
-                exception.printStackTrace()
-                _registerUiState.value = when (exception) {
-                    is java.net.UnknownHostException -> RegisterUiState.Error("No Internet connection. Please check your network settings.")
-                    is java.net.SocketTimeoutException -> RegisterUiState.Error("Request timed out. Please try again.")
-                    is java.net.ConnectException -> RegisterUiState.Error("Unable to connect to the server. Please check your internet connection.")
-                    is java.net.NoRouteToHostException -> RegisterUiState.Error("No route to host. Please check your internet connection.")
-                    is java.net.ProtocolException -> RegisterUiState.Error("Protocol error. Please try again.")
-                    is java.net.UnknownServiceException -> RegisterUiState.Error("Unknown service error. Please try again.")
-                    else -> RegisterUiState.Error("An unexpected error occurred, please try again.")
-                }
+            } else {
+                _registerUiState.value = RegisterUiState.Error(task.exception?.localizedMessage ?: "Registration failed")
             }
         }
     }
+
+
 
     fun resetRegisterState() {
         _registerUiState.value = RegisterUiState.Ideal

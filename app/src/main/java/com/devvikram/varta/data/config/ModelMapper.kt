@@ -2,12 +2,14 @@ package com.devvikram.varta.data.config
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.devvikram.varta.data.firebase.models.FContact
 import com.devvikram.varta.data.firebase.models.conversation.Conversation
 import com.devvikram.varta.data.firebase.models.conversation.Participant
 import com.devvikram.varta.data.firebase.models.conversation.UserPreference
 import com.devvikram.varta.data.firebase.models.enums.MessageType
 import com.devvikram.varta.data.firebase.models.message.ChatMessage
 import com.devvikram.varta.data.firebase.models.message.ForwardMetadata
+import com.devvikram.varta.data.room.models.ProContacts
 import com.devvikram.varta.data.room.models.RoomConversation
 import com.devvikram.varta.data.room.models.RoomForwardMetadata
 import com.devvikram.varta.data.room.models.RoomMessage
@@ -26,7 +28,7 @@ object ModelMapper {
     }
 
     // 1. Conversation to RoomConversation
-    fun mapToRoomConversation(conversation: Conversation,currentUserId : Int): RoomConversation {
+    fun mapToRoomConversation(conversation: Conversation,currentUserId : String): RoomConversation {
 
         val userId = conversation.participantIds.first { it != currentUserId.toString() }
         Log.d(TAG, "mapToRoomConversation: ${conversation.participantIds}")
@@ -40,7 +42,7 @@ object ModelMapper {
             createdAt = conversation.createdAt ?: 0L,
             description = conversation.description,
             participantIds = conversation.participantIds,
-            userId = userId.toInt(),
+            userId = userId,
             lastModifiedAt = conversation.lastModifiedAt
         )
     }
@@ -180,6 +182,19 @@ object ModelMapper {
         return UserPreference(
             isPinned = roomUserPreference.isPinned,
             customNotificationTone = roomUserPreference.customNotificationTone
+        )
+    }
+
+    fun mapToFContact(fContact: FContact): ProContacts {
+        return ProContacts(
+            userId = fContact.userId,
+            name = fContact.name ?: "",
+            email = fContact.email ?: "",
+            gender = fContact.gender ?: "",
+            designation = fContact.designation ?: "",
+            profilePic = fContact.profilePic ?: "",
+            userStatus = fContact.userStatus ?: false,
+            localProfilePicPath = fContact.localProfilePicPath ?: ""
         )
     }
 }
