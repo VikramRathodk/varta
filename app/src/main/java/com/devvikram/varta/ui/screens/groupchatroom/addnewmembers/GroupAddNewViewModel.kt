@@ -56,7 +56,7 @@ class GroupAddNewViewModel @Inject constructor(
                     if (alreadyAdded) {
                         GroupContactItem.AlreadyAddedGroupContactItem(
                             localProfilePath = contact.localProfilePicPath,
-                            proDesignation = contact.designation,
+                            statusText = contact.statusText,
                             proUserId = contact.userId,
                             proNameOfUser = contact.name
                         )
@@ -64,7 +64,7 @@ class GroupAddNewViewModel @Inject constructor(
                         GroupContactItem.UnselectedGroupContactItem(
                             localProfilePath = contact.localProfilePicPath,
                             isSelected = false,
-                            proDesignation = contact.designation,
+                            statusText = contact.statusText,
                             proUserId = contact.userId,
                             proNameOfUser = contact.name
                         )
@@ -88,7 +88,7 @@ class GroupAddNewViewModel @Inject constructor(
                         val selectedItem = GroupContactItem.SelectedGroupContactItem(
                             proUserId = currentItem.proUserId,
                             proNameOfUser = currentItem.proNameOfUser,
-                            proDesignation = currentItem.proDesignation,
+                            statusText = currentItem.statusText,
                             isSelected = !currentItem.isSelected,
                             localProfilePath = currentItem.localProfilePath
                         )
@@ -103,7 +103,7 @@ class GroupAddNewViewModel @Inject constructor(
                         val unselectedItem = GroupContactItem.UnselectedGroupContactItem(
                             proUserId = currentItem.proUserId,
                             proNameOfUser = currentItem.proNameOfUser,
-                            proDesignation = currentItem.proDesignation,
+                            statusText = currentItem.statusText,
                             isSelected = !currentItem.isSelected,
                             localProfilePath = currentItem.localProfilePath
                         )

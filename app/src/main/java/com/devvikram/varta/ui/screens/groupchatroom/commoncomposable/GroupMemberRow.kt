@@ -33,7 +33,7 @@ import com.devvikram.varta.ui.screens.groupchatroom.maingroupchatroom.MainGroupC
 @Composable
 fun GroupMemberRow(
     userId: String,
-    name: String, designation: String,
+    name: String, statusText: String,
     profileImage: String,
     mainGroupChatRoomViewModel: MainGroupChatRoomViewModel
 ) {
@@ -65,7 +65,7 @@ fun GroupMemberRow(
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(text = name, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-            Text(text = designation, style = MaterialTheme.typography.bodyLarge)
+            Text(text = statusText, style = MaterialTheme.typography.bodyLarge)
         }
 
         // Option Menu

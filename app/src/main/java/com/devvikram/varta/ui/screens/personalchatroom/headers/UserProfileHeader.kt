@@ -87,7 +87,7 @@ fun UserProfileHeader(
                         )
                     )
                     Text(
-                        text = currentReceiver?.designation ?: "",
+                        text = currentReceiver?.statusText ?: "",
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontWeight = FontWeight.Normal,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),

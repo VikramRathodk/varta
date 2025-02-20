@@ -9,7 +9,6 @@ import androidx.work.WorkerParameters
 import com.devvikram.varta.config.constants.LoginPreference
 import com.devvikram.varta.data.config.ModelMapper
 import com.devvikram.varta.data.firebase.models.FContact
-import com.devvikram.varta.data.room.models.ProContacts
 import com.devvikram.varta.data.room.repository.ContactRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.assisted.Assisted
@@ -60,7 +59,19 @@ class SyncContacts @AssistedInject constructor(
                         Log.d(TAG, "syncContacts: firebase contacts: $fContact")
 
                         if(fContact != null){
-                            val proContact = ModelMapper.mapToFContact(fContact)
+
+                            val bitmap =
+                                com.devvikram.varta.utility.AppUtils.downloadImage(fContact.profilePic)
+                            val localProfilePicPath =
+                                bitmap?.let {
+                                    com.devvikram.varta.utility.AppUtils.saveImageToStorage(
+                                        it,
+                                        fContact.name
+                                    )
+                                }
+
+                            val proContact =
+                                ModelMapper.mapToFContact(fContact, localProfilePicPath.toString())
                             val existingContact = contactRepository.getContactByUsernameNormal(proContact.name)
                             if (existingContact == null) {
                                 contactRepository.insertUserContact(proContact)

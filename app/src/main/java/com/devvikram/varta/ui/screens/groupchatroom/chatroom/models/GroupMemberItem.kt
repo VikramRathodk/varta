@@ -15,14 +15,14 @@ sealed class GroupMemberItem : Parcelable {
         val userId: String,
         val name: String,
         val profileImage: String,
-        val designation: String,
+        val statusText: String,
     ) : GroupMemberItem()
 
     @Serializable
-    data class GroupCreater(val userId: String, val name: String, val profileImage: String, val designation: String,
+    data class GroupCreater(val userId: String, val name: String, val profileImage: String, val statusText: String,
     ) : GroupMemberItem()
 
     @Serializable
-    data class GroupAdmin(val userId: String, val name: String, val profileImage: String,val designation: String,
+    data class GroupAdmin(val userId: String, val name: String, val profileImage: String,val statusText: String,
     ) : GroupMemberItem()
 }

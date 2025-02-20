@@ -29,28 +29,6 @@ class RetrofitInstance {
                 .build()
         }
 
-        private fun getBCSTEPRetrofitInstance(): Retrofit{
-            val loggingInterceptor = HttpLoggingInterceptor()
-            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-
-            val client = OkHttpClient.Builder()
-               .addInterceptor(loggingInterceptor)
-               .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-               .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-               .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-               .build()
-
-            return Retrofit.Builder()
-               .baseUrl(VartaConstant.BCSTEP_BASE_URL)
-               .addConverterFactory(GsonConverterFactory.create())
-               .client(client)
-               .build()
-        }
-
-        fun getBCSTEPApiService(): AppApiService {
-            return getBCSTEPRetrofitInstance().create(AppApiService::class.java)
-        }
-
 
         fun getApiService(): AppApiService {
             return getRetrofitInstance().create(AppApiService::class.java)

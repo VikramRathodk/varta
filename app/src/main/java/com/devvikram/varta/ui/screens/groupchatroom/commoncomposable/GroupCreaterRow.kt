@@ -35,7 +35,7 @@ import com.devvikram.varta.ui.screens.groupchatroom.maingroupchatroom.MainGroupC
 @Composable
 fun GroupCreatorRow(
     name: String,
-    designation: String,
+    statusText: String,
     profileImage: String,
     mainGroupChatRoomViewModel: MainGroupChatRoomViewModel,
     userId: String

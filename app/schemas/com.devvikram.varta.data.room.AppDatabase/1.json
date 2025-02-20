@@ -356,7 +356,7 @@
       },
       {
         "tableName": "pro_contacts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `gender` TEXT NOT NULL, `designation` TEXT NOT NULL, `profile_pic` TEXT NOT NULL, `user_status` INTEGER NOT NULL, `local_profile_pic_path` TEXT NOT NULL, PRIMARY KEY(`user_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `gender` TEXT NOT NULL, `statusText` TEXT NOT NULL, `profile_pic` TEXT NOT NULL, `user_status` INTEGER NOT NULL, `local_profile_pic_path` TEXT NOT NULL, PRIMARY KEY(`user_id`))",
         "fields": [
           {
             "fieldPath": "userId",
@@ -383,8 +383,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "designation",
-            "columnName": "designation",
+            "fieldPath": "statusText",
+            "columnName": "statusText",
             "affinity": "TEXT",
             "notNull": true
           },

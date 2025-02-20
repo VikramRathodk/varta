@@ -9,7 +9,7 @@ sealed class GroupContactItem {
     data class UnselectedGroupContactItem(
         override val proUserId: String,
         val proNameOfUser: String,
-        val proDesignation: String,
+        val statusText: String,
         val isSelected: Boolean,
         val localProfilePath: String
     ) : GroupContactItem()
@@ -17,7 +17,7 @@ sealed class GroupContactItem {
     data class SelectedGroupContactItem(
         override val proUserId: String,
         val proNameOfUser: String,
-        val proDesignation: String,
+        val statusText: String,
         val isSelected: Boolean,
         val localProfilePath: String
     ) : GroupContactItem()
@@ -25,7 +25,7 @@ sealed class GroupContactItem {
     data class AlreadyAddedGroupContactItem(
         override val proUserId: String,
         val proNameOfUser: String,
-        val proDesignation: String,
+        val statusText: String,
         val localProfilePath: String
     ) : GroupContactItem()
 }

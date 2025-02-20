@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import com.devvikram.varta.config.constants.MediaType
@@ -26,12 +27,23 @@ class AppUtils {
        fun getAppVersion(): String {
            return BuildConfig.VERSION_NAME
        }
-       fun downloadImage(url: String): Bitmap {
-           val connection = URL(url).openConnection() as HttpURLConnection
-           connection.doInput = true
-           connection.connect()
-           return BitmapFactory.decodeStream(connection.inputStream)
+       fun downloadImage(url: String): Bitmap? {
+           if (url.isBlank()) {
+               Log.e("DownloadImage", "URL is empty or blank")
+               return null
+           }
+
+           return try {
+               val connection = URL(url).openConnection() as HttpURLConnection
+               connection.doInput = true
+               connection.connect()
+               BitmapFactory.decodeStream(connection.inputStream)
+           } catch (e: Exception) {
+               Log.e("DownloadImage", "Error downloading image: ${e.message}")
+               null
+           }
        }
+
 
        fun saveImageToStorage(bitmap: Bitmap, fileName: String): String {
            val storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)

@@ -29,10 +29,6 @@ data class ProContacts(
     @SerializedName("gender")
     val gender: String = "",
 
-    @ColumnInfo(name = "designation")
-    @SerializedName("designation")
-    val designation: String = "",
-
     @ColumnInfo(name = "profile_pic")
     @SerializedName("profilePic")
     val profilePic: String ="",
@@ -43,4 +39,7 @@ data class ProContacts(
 
     @ColumnInfo(name = "local_profile_pic_path")
     val localProfilePicPath: String = "",
+
+    @ColumnInfo(name = "status_text")
+    val statusText: String = "",
 )

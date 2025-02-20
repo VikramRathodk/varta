@@ -185,16 +185,15 @@ object ModelMapper {
         )
     }
 
-    fun mapToFContact(fContact: FContact): ProContacts {
+    fun mapToFContact(fContact: FContact,localProfilePicPath: String): ProContacts {
         return ProContacts(
             userId = fContact.userId,
             name = fContact.name ?: "",
             email = fContact.email ?: "",
             gender = fContact.gender ?: "",
-            designation = fContact.designation ?: "",
             profilePic = fContact.profilePic ?: "",
             userStatus = fContact.userStatus ?: false,
-            localProfilePicPath = fContact.localProfilePicPath ?: ""
+            localProfilePicPath = localProfilePicPath
         )
     }
 }

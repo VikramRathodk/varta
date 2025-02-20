@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.devvikram.varta.config.constants.LoginPreference
 import com.devvikram.varta.data.config.ModelMapper
 import com.devvikram.varta.data.firebase.models.FContact
+import com.devvikram.varta.data.firebase.repositories.FirebaseContactRepository
 import com.devvikram.varta.data.retrofit.models.LoginInformation
 import com.devvikram.varta.data.retrofit.models.LoginResponse
 import com.devvikram.varta.data.retrofit.models.RegisterModel
 import com.devvikram.varta.data.room.repository.ContactRepository
+import com.devvikram.varta.utility.AppUtils
 import com.devvikram.varta.workers.WorkerManagers
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -26,7 +28,8 @@ class LoginViewModel @Inject constructor(
     private val contactRepository: ContactRepository,
     @ApplicationContext private val applicationContext: Context,
     private val firebaseAuth : FirebaseAuth,
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val firebaseContactRepository: FirebaseContactRepository
 
 ) : ViewModel() {
 
@@ -37,6 +40,16 @@ class LoginViewModel @Inject constructor(
     private val _registerUiState = MutableStateFlow<RegisterUiState>(RegisterUiState.Ideal)
     val registerUiState = _registerUiState.asStateFlow()
 
+    fun register(registerInformation: RegisterModel) {
+        viewModelScope.launch {
+            _registerUiState.value = RegisterUiState.Loading
+            val result = firebaseContactRepository.registerUser(registerInformation)
+            _registerUiState.value = result.fold(
+                onSuccess = { RegisterUiState.Success(it) },
+                onFailure = { RegisterUiState.Error(it.localizedMessage ?: "Registration failed") }
+            )
+        }
+    }
 
 
     fun login(loginInformation: LoginInformation) {
@@ -62,9 +75,21 @@ class LoginViewModel @Inject constructor(
                                 val fContact = documentSnapshot.toObject(FContact::class.java)
 
                                 if (fContact != null) {
-                                    val proContact = ModelMapper.mapToFContact(fContact)
                                     viewModelScope.launch {
-                                        contactRepository.insertUserContact(proContact)
+                                        val bitmap = AppUtils.downloadImage(fContact.profilePic)
+                                        println(bitmap)
+                                        val localProfilePicPath =
+                                            bitmap?.let { it1 -> AppUtils.saveImageToStorage(it1, fContact.name) }
+
+                                        val proContact = localProfilePicPath?.let { it1 ->
+                                            ModelMapper.mapToFContact(fContact,
+                                                it1
+                                            )
+                                        }
+
+                                        if (proContact != null) {
+                                            contactRepository.insertUserContact(proContact)
+                                        }
                                     }
                                 }
                                 _loginUiState.value = LoginUiState.Success(
@@ -132,57 +157,6 @@ class LoginViewModel @Inject constructor(
     fun resetLoginState() {
         _loginUiState.value = LoginUiState.Ideal
     }
-
-    fun register(registerInformation: RegisterModel) {
-        if (!validInput(LoginInformation(registerInformation.username, registerInformation.password), false)) {
-            return
-        }
-
-        _registerUiState.value = RegisterUiState.Loading
-
-        firebaseAuth.createUserWithEmailAndPassword(
-            registerInformation.username,
-            registerInformation.password
-        ).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val user = firebaseAuth.currentUser
-                user?.let {
-                    val userCollection = firestore.collection(
-                        com.devvikram.varta.data.firebase.config.Firebase.FIREBASE_USER_COLLECTION
-                    )
-
-                    val userData = mapOf(
-                        "userId" to it.uid,
-                        "name" to registerInformation.username,
-                        "email" to registerInformation.username,
-                        "gender" to registerInformation.gender,
-                        "createdAt" to System.currentTimeMillis(),
-                        "profilePic" to "",
-                        "userStatus" to true,
-
-                    )
-
-                    userCollection.document(it.uid).set(userData)
-                        .addOnSuccessListener {
-                            _registerUiState.value = RegisterUiState.Success(
-                                LoginResponse(success = true, message = "Registration successful", data = null)
-                            )
-                            loginPreference.saveLoginInfo(
-                                userId = user.uid,
-                                loginSessionId = user.uid,
-                                loginSessionStatus = true
-                            )
-                        }
-                        .addOnFailureListener { e ->
-                            _registerUiState.value = RegisterUiState.Error(e.localizedMessage ?: "Failed to save user data")
-                        }
-                }
-            } else {
-                _registerUiState.value = RegisterUiState.Error(task.exception?.localizedMessage ?: "Registration failed")
-            }
-        }
-    }
-
 
 
     fun resetRegisterState() {

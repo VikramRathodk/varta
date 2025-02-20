@@ -183,7 +183,7 @@ fun AlreadyAddedGroupContactItemView(item: GroupContactItem.AlreadyAddedGroupCon
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = item.proDesignation,
+                    text = item.statusText,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -223,7 +223,7 @@ fun SelectedGroupContactItemView(
                     color = MaterialTheme.colorScheme.primary
                 )
                 Text(
-                    text = item.proDesignation,
+                    text = item.statusText,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
@@ -264,7 +264,7 @@ fun UnselectedGroupContactItemView(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = item.proDesignation,
+                    text = item.statusText,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
