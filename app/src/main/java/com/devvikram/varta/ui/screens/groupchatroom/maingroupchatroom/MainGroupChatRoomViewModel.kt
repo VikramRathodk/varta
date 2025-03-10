@@ -86,25 +86,25 @@ class MainGroupChatRoomViewModel @Inject constructor(
                         val userId = contact.userId ?: continue
 
                         val newMemberItem = when {
-                            contact.userId.toString() == _groupInformation.value?.createdBy ->
+                            contact.userId == _groupInformation.value?.createdBy ->
                                 GroupMemberItem.GroupCreater(
                                     userId = contact.userId,
                                     name = contact.name,
                                     profileImage = contact.profilePic,
-                                    designation = contact.designation
+                                    statusText = contact.statusText
                                 )
                             participant.role == "ADMIN" ->
                                 GroupMemberItem.GroupAdmin(
                                     userId = contact.userId,
                                     name = contact.name,
                                     profileImage = contact.profilePic,
-                                    designation = contact.designation
+                                    statusText = contact.statusText
                                 )
                             else ->
                                 GroupMemberItem.GroupMember(
                                     name = contact.name,
                                     userId = contact.userId,
-                                    designation = contact.designation,
+                                    statusText = contact.statusText,
                                     profileImage = contact.profilePic
                                 )
                         }

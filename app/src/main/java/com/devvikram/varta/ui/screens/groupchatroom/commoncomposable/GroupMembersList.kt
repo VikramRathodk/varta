@@ -48,7 +48,7 @@ fun GroupMembersList(
                     is GroupMemberItem.GroupCreater ->{
                         GroupCreatorRow(
                             name = item.name,
-                            designation = item.designation,
+                            statusText = item.statusText,
                             profileImage = item.profileImage,
                             mainGroupChatRoomViewModel = mainGroupChatRoomViewModel,
                             userId = item.userId.toString()
@@ -58,7 +58,7 @@ fun GroupMembersList(
                     is GroupMemberItem.GroupMember -> {
                         GroupMemberRow(
                             name = item.name,
-                            designation = item.designation,
+                            statusText = item.statusText,
                             profileImage = item.profileImage,
                             mainGroupChatRoomViewModel = mainGroupChatRoomViewModel,
                             userId = item.userId.toString()
@@ -69,7 +69,7 @@ fun GroupMembersList(
                             name = item.name,
                             profileImage = item.profileImage,
                             mainGroupChatRoomViewModel = mainGroupChatRoomViewModel,
-                            designation = item.designation,
+                            statusText = item.statusText,
                             userId = item.userId.toString()
                         )
                     }

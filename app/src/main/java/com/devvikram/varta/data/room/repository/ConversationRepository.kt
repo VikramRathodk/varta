@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 @Singleton
 class ConversationRepository
 @Inject constructor(
@@ -28,9 +27,11 @@ class ConversationRepository
         conversation: RoomConversation,
         roomParticipants: List<RoomParticipant>,
         participants: List<Participant>,
-        newMessage: RoomMessage
+        newMessage: RoomMessage,
+        updateConversationId :(String) -> Unit
     ) {
         val conversationId = firestore.collection(Firebase.FIRESTORE_CONVERSATION_COLLECTION).document().id
+        updateConversationId(conversationId)
 
         val newConversation = conversation.copy(conversationId = conversationId)
 
@@ -38,7 +39,7 @@ class ConversationRepository
 
         conversationDao.insertConversation(newConversation)
 
-        messageRepository.insertNewMessage(newMessage.copy(conversationId = conversationId),newConversation)
+        messageRepository.insertNewMessage(newMessage.copy(conversationId = conversationId))
         participantRepository.insertNewParticipants(conversationId,newParticipants,participants)
         firebaseConversationRepository.createConversation(ModelMapper.mapToConversation(newConversation,participants))
     }
@@ -97,4 +98,15 @@ class ConversationRepository
         lastTimeStampMap["lastModifiedAt"] = System.currentTimeMillis()
         firebaseConversationRepository.updateConversation(conversationId = converationId, fields = lastTimeStampMap)
     }
+
+    fun getConversationByIdFlow(value: String): Flow<RoomConversation> {
+        return conversationDao.getConversationByIdFlow(value)
+
+    }
+
+    suspend fun getConversationAndContactWithConversationUniqueKey(conversationId: String): ConversationWithContact {
+        return conversationDao.getConversationAndContactWithConversationConversationId(conversationId)
+
+    }
+
 }

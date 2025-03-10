@@ -33,4 +33,12 @@ interface ConversationDao {
     @Query("DELETE FROM conversations")
     suspend fun deleteAllConversations()
 
+    @Query("SELECT * FROM conversations WHERE conversationId = :conversationId")
+    fun getConversationByIdFlow(conversationId: String): Flow<RoomConversation>
+
+    @Transaction
+    @Query("SELECT * FROM conversations WHERE conversationId = :conversationId")
+    suspend fun getConversationAndContactWithConversationConversationId(conversationId: String): ConversationWithContact
+
+
 }

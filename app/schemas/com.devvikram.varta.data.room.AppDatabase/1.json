@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "d2bae31f430dfd7a28201ec329d9c392",
+    "identityHash": "650b9a46151251f2b41ab901522420f4",
     "entities": [
       {
         "tableName": "conversations",
@@ -356,12 +356,12 @@
       },
       {
         "tableName": "pro_contacts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `gender` TEXT NOT NULL, `designation` TEXT NOT NULL, `profile_pic` TEXT NOT NULL, `user_status` INTEGER NOT NULL, `companies` TEXT NOT NULL, `projects` TEXT NOT NULL, `local_profile_pic_path` TEXT NOT NULL, PRIMARY KEY(`user_id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` TEXT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL, `gender` TEXT NOT NULL, `statusText` TEXT NOT NULL, `profile_pic` TEXT NOT NULL, `user_status` INTEGER NOT NULL, `local_profile_pic_path` TEXT NOT NULL, PRIMARY KEY(`user_id`))",
         "fields": [
           {
             "fieldPath": "userId",
             "columnName": "user_id",
-            "affinity": "INTEGER",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -383,8 +383,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "designation",
-            "columnName": "designation",
+            "fieldPath": "statusText",
+            "columnName": "statusText",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -398,18 +398,6 @@
             "fieldPath": "userStatus",
             "columnName": "user_status",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "companies",
-            "columnName": "companies",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "projects",
-            "columnName": "projects",
-            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -432,7 +420,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd2bae31f430dfd7a28201ec329d9c392')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '650b9a46151251f2b41ab901522420f4')"
     ]
   }
 }

@@ -133,12 +133,6 @@ fun ProfileLayout(
                             )
                         )
 
-                    Text(
-                        text = currentLoggedUser?.designation ?: "NA",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
-                        )
-                    )
                 }
 
                 Spacer(modifier = Modifier.weight(1f))

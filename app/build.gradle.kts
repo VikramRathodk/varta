@@ -12,11 +12,11 @@ plugins {
 }
 
 android {
-    namespace = "com.devvikram.varta"
+    namespace = "com.bcstep.prochat"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.devvikram.varta"
+        applicationId = "com.bcstep.prochat"
         minSdk = 25
         targetSdk = 35
         versionCode = 1
@@ -140,4 +140,13 @@ dependencies {
 
     implementation (libs.accompanist.pager.indicators)
     implementation(libs.bouquet)
+
+    implementation(libs.androidx.room.paging)
+    implementation(libs.androidx.paging.compose)
+
+
+    implementation(libs.app.update)
+
+    implementation(libs.landscapist.glide)
+
 }

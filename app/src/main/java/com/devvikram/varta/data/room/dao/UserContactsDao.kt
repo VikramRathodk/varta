@@ -14,10 +14,13 @@ interface UserContactsDao {
     suspend fun insetUserContact(proContacts: ProContacts)
 
     @Upsert
+    suspend fun updateContact(proContacts: ProContacts)
+
+    @Upsert
     suspend fun updateAllUsersContacts(updatedContacts: List<ProContacts>)
 
     @Query("SELECT * FROM pro_contacts WHERE user_id = :proUserId")
-    suspend fun getContactByUserId(proUserId: Long): ProContacts
+    suspend fun getContactByUserId(proUserId: String): ProContacts
 
     @Query("DELETE FROM pro_contacts WHERE user_id = :proUserId")
     suspend fun deleteSingleUser(proUserId: Long)
@@ -35,7 +38,7 @@ interface UserContactsDao {
     suspend fun clearContact()
 
     @Query("SELECT * FROM pro_contacts WHERE user_id = :proUserId")
-    fun getContactByUserIdFlow(proUserId: Long): Flow<ProContacts>
+    fun getContactByUserIdFlow(proUserId: String): Flow<ProContacts>
 
 
     @Query("SELECT * FROM pro_contacts WHERE user_id IN (:participantsIds)")
@@ -43,5 +46,6 @@ interface UserContactsDao {
 
     @Query("DELETE FROM pro_contacts")
     suspend fun deleteContacts()
+
 
 }

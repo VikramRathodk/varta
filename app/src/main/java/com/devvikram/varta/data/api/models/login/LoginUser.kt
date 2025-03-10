@@ -2,7 +2,7 @@ package com.devvikram.varta.data.api.models.login
 
 data class LoginUser(
     val companies: List<Company>,
-    val designation: String,
+    val statusText: String,
     val email: String,
     val gender: String,
     val name: String,

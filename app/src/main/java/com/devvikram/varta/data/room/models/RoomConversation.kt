@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "conversations")
 data class RoomConversation(
     @PrimaryKey val conversationId: String,
-    val userId: Int,
+    val userId: String,
     val type: String, // "P" (personal), "G" (group)
     val groupType: String? = null, // "Project-Based", "Company-Based", null (General-Group)
     val name: String? = null, // Optional, for group chats

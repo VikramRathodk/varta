@@ -3,13 +3,18 @@ package com.devvikram.varta.data.firebase.repositories
 import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.devvikram.varta.data.firebase.config.Firebase
 import com.devvikram.varta.data.firebase.models.message.ChatMessage
+import com.devvikram.varta.utility.AppUtils
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.logging.Logger
 import javax.inject.Inject
+
+
 
 
 class FirebaseMessageRepository @Inject constructor(private val firestore: FirebaseFirestore,private val firebaseConversationRepository: FirebaseConversationRepository) {
@@ -46,23 +51,52 @@ class FirebaseMessageRepository @Inject constructor(private val firestore: Fireb
         }
     }
 
-//    // Update message metadata (e.g., reactions, read status)
-//    suspend fun updateMessageField(
-//        conversationId: String,
-//        date: String,
-//        messageId: String,
-//        fieldName: String,
-//        value: Any
-//    ) {
-//        try {
-//            getMessagesCollection(conversationId, date)
-//                .document(messageId)
-//                .update(fieldName, value)
-//                .await()
-//        } catch (e: Exception) {
-//            logger.warning("Error updating message field: $e")
-//        }
-//    }
+    suspend fun updateMessageField(conversationId: String,
+                                   messageId: String,
+                                   field: Map<String, Any>) {
+        try {
+            val formater = SimpleDateFormat("dd-MM-yyyy")
+            val currentDate = formater.format(Date())
+            Log.d(TAG, "sendMessage Firebase Current time: $currentDate")
+            getMessagesCollection(conversationId, currentDate)
+                .document(messageId)
+                .update(field)
+                .await()
+        } catch (
+            e: Exception
+        ) {
+            logger.warning("Error sending message: $e")
+        }
+    }
 
+    suspend fun updateMessageInFirebase(message: ChatMessage) {
+        try {
+            firestore.collection(Firebase.FIRESTORE_MESSAGE_COLLECTION)
+                .document(message.conversationId)
+                .collection(AppUtils.getFormattedDate())
+                .document(message.messageId)
+                .set(message, SetOptions.merge())
+                .await()
+
+            Log.d(TAG, "Message updated in Firestore successfully: ${message.messageId}")
+        } catch (error: Exception) {
+            Log.e(TAG, "Failed to update message in Firestore: ${error.message}")
+        }
+    }
+
+    fun updateFirebaseMessageField(conversationId: String, timeStamp: Long, messageId: String, isReadBy: Map<String, Long>) {
+        val messageRef = firestore.collection(Firebase.FIRESTORE_MESSAGE_COLLECTION)
+            .document(conversationId)
+            .collection(AppUtils.getDateFromTimestamp(timeStamp))
+            .document(messageId)
+
+        messageRef.update("isReadBy", isReadBy)
+            .addOnSuccessListener {
+                Log.d(TAG, "updateFirebaseMessageField: Successfully updated message $messageId")
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "updateFirebaseMessageField: Failed to update message $messageId. Error: ${e.message}")
+            }
+    }
 
 }

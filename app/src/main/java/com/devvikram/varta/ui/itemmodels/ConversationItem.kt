@@ -26,7 +26,7 @@ sealed class ConversationItem {
         val localProfilePicPath: String = "https://",
         override var selected: Boolean = false,
         val isForwarded: Boolean = false,
-        val proContactDesignation: String = ""
+        val proContactstatusText: String = ""
     ) : ConversationItem()
 
     data class GroupConversation(

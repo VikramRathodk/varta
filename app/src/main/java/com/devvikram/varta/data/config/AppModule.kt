@@ -17,6 +17,8 @@ import com.devvikram.varta.data.room.repository.ConversationRepository
 import com.devvikram.varta.data.room.repository.MessageRepository
 import com.devvikram.varta.data.room.repository.ParticipantRepository
 import com.devvikram.varta.data.room.repository.UserPreferenceRepository
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -36,6 +38,12 @@ object AppModule {
     @Singleton
     fun provideFirestore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance()
     }
 
     @Provides

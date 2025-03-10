@@ -33,7 +33,7 @@ import com.devvikram.varta.ui.screens.groupchatroom.maingroupchatroom.MainGroupC
 
 @Composable
 fun GroupAdminRow( userId: String,
-                   name: String, designation: String,
+                   name: String, statusText: String,
                    profileImage: String,
                    mainGroupChatRoomViewModel: MainGroupChatRoomViewModel
 ) {

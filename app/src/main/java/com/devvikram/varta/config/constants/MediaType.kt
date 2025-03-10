@@ -1,5 +1,6 @@
 package com.devvikram.varta.config.constants
 
+
 enum class MediaType {
     IMAGE,
     PDF,
@@ -12,5 +13,6 @@ enum class MediaType {
     VIDEO,
     AUDIO,
     DOCUMENT,
+    AUTOCAD,
     OTHER,
 }

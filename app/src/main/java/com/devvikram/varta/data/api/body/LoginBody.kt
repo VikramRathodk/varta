@@ -5,5 +5,5 @@ data class LoginBody(
     val deviceUniqueId: String,
     val email: String,
     val force: Boolean = false,
-    val password: String
+    val password: String =""
 )

@@ -91,9 +91,8 @@ fun SingleContactCard(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
-                    text = contactMultipleItem.contact.designation ?: "|NA|",
+                    text = contactMultipleItem.contact.statusText ?: "|NA|",
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        color = colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Normal
                     ),
                     maxLines = 1,

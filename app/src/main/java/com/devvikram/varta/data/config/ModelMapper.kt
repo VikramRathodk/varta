@@ -2,17 +2,21 @@ package com.devvikram.varta.data.config
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.devvikram.varta.data.firebase.models.FContact
 import com.devvikram.varta.data.firebase.models.conversation.Conversation
+import com.devvikram.varta.data.firebase.models.conversation.LastMessage
 import com.devvikram.varta.data.firebase.models.conversation.Participant
 import com.devvikram.varta.data.firebase.models.conversation.UserPreference
 import com.devvikram.varta.data.firebase.models.enums.MessageType
 import com.devvikram.varta.data.firebase.models.message.ChatMessage
 import com.devvikram.varta.data.firebase.models.message.ForwardMetadata
+import com.devvikram.varta.data.room.models.ProContacts
 import com.devvikram.varta.data.room.models.RoomConversation
 import com.devvikram.varta.data.room.models.RoomForwardMetadata
 import com.devvikram.varta.data.room.models.RoomMessage
 import com.devvikram.varta.data.room.models.RoomParticipant
 import com.devvikram.varta.data.room.models.RoomUserPreference
+import com.devvikram.varta.utility.AppUtils
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
@@ -26,7 +30,7 @@ object ModelMapper {
     }
 
     // 1. Conversation to RoomConversation
-    fun mapToRoomConversation(conversation: Conversation,currentUserId : Int): RoomConversation {
+    fun mapToRoomConversation(conversation: Conversation,currentUserId : String): RoomConversation {
 
         val userId = conversation.participantIds.first { it != currentUserId.toString() }
         Log.d(TAG, "mapToRoomConversation: ${conversation.participantIds}")
@@ -40,7 +44,7 @@ object ModelMapper {
             createdAt = conversation.createdAt ?: 0L,
             description = conversation.description,
             participantIds = conversation.participantIds,
-            userId = userId.toInt(),
+            userId = userId,
             lastModifiedAt = conversation.lastModifiedAt
         )
     }
@@ -64,7 +68,7 @@ object ModelMapper {
     }
 
     // 3. ChatMessage to RoomMessage
-    fun mapToRoomMessage(chatMessage: ChatMessage): RoomMessage {
+    fun mapToRoomMessage(chatMessage: ChatMessage, existingMessage: RoomMessage? = null): RoomMessage {
         return RoomMessage(
             messageId = chatMessage.messageId,
             conversationId = chatMessage.conversationId,
@@ -75,7 +79,7 @@ object ModelMapper {
             timestamp = chatMessage.timestamp ?: 0L,
             mediaUrl = chatMessage.mediaUrl,
             thumbnailUrl = chatMessage.thumbnailUrl,
-            mediaSize = chatMessage.mediaSize,
+            mediaSize = chatMessage.mediaSize ?: existingMessage?.mediaSize,
             mediaDurationInSeconds = chatMessage.mediaDurationInSeconds,
             isEdited = chatMessage.isEdited,
             reactions = chatMessage.reactions.mapValues { it.value },
@@ -97,11 +101,16 @@ object ModelMapper {
                 )
             },
             forwardCount = chatMessage.forwardCount,
-            localFilePath = null, // Placeholder for downloaded file path
+            localFilePath = null,
             isDownloaded = false,
             mediaType = chatMessage.mediaType,
             mediaName = chatMessage.mediaName,
-        )
+            mediaLocalUrl = existingMessage?.mediaLocalUrl,
+            mediaStatus = existingMessage?.mediaStatus.toString(),
+            uploadProgress = existingMessage?.uploadProgress ?: 0,
+            isUploaded = chatMessage.isUploaded,
+
+            )
     }
 
     // 4. RoomMessage to ChatMessage
@@ -180,6 +189,34 @@ object ModelMapper {
         return UserPreference(
             isPinned = roomUserPreference.isPinned,
             customNotificationTone = roomUserPreference.customNotificationTone
+        )
+    }
+
+    fun mapToFContact(fContact: FContact,localProfilePicPath: String): ProContacts {
+        return ProContacts(
+            userId = fContact.userId,
+            name = fContact.name ?: "",
+            email = fContact.email ?: "",
+            gender = fContact.gender ?: "",
+            profilePic = fContact.profilePic ?: "",
+            userStatus = fContact.userStatus ?: false,
+            localProfilePicPath = localProfilePicPath
+        )
+    }
+    fun mapToLastMessage(message: RoomMessage): LastMessage {
+
+
+        return LastMessage(
+            timestamp = message.timestamp,
+            mediaUrl = message.mediaUrl,
+            mediaType = message.mediaType,
+            messageId = message.messageId,
+            senderId =message.senderId,
+            senderName = message.senderName.toString(),
+            messageType = AppUtils.getMessageType(message.messageType),
+            text = message.text,
+            isReadBy = message.isReadBy,
+            isReceivedBy = message.isReceivedBy,
         )
     }
 }

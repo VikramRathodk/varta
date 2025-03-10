@@ -14,14 +14,17 @@ class ContactRepository @Inject constructor(
     }
 
     suspend fun getContactByUserId(proUserId: String) : ProContacts {
+        if(proUserId.isEmpty()){
+            throw IllegalArgumentException("Invalid user id")
+        }
        return userContactsDao.getContactByUserId(
-           proUserId = proUserId.toLong()
+           proUserId = proUserId
        )
     }
 
     fun getContactByUserIdFlow(proUserId: String) : Flow<ProContacts> {
         return userContactsDao.getContactByUserIdFlow(
-            proUserId = proUserId.toLong()
+            proUserId = proUserId
         )
     }
      fun getAllUsersContacts() : Flow<List<ProContacts> >{
@@ -42,6 +45,9 @@ class ContactRepository @Inject constructor(
     suspend fun getContactByUsernameNormal(name: String): ProContacts {
         return userContactsDao.getContactByUsernameNormal(name)
 
+    }
+    suspend fun updateContact(proContacts: ProContacts){
+        userContactsDao.updateContact(proContacts)
     }
 
     suspend fun updateUserContacts(updatedContacts: List<ProContacts>) {
