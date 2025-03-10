@@ -5,6 +5,7 @@ import com.devvikram.varta.data.room.models.RoomParticipant
 import com.devvikram.varta.ui.itemmodels.ParticipantWithContact
 import kotlinx.coroutines.flow.Flow
 
+
 @Dao
 interface ParticipantDao {
     @Upsert
@@ -23,15 +24,22 @@ interface ParticipantDao {
     suspend fun deleteAllParticipants()
 
     @Query("SELECT * FROM participants WHERE conversationId = :conversationId")
-     fun getParticipantsByConversationIdWithFlow(conversationId: String):  Flow<List<RoomParticipant>>
+    fun getParticipantsByConversationIdWithFlow(conversationId: String):  Flow<List<RoomParticipant>>
 
-     @Query("SELECT * FROM participants WHERE conversationId = :conversationId")
-     fun getParticipantsWithConversationIdAndUser(conversationId: String): Flow<List<ParticipantWithContact>>
+    @Transaction
+    @Query("SELECT * FROM participants WHERE conversationId = :conversationId")
+    fun getParticipantsWithConversationIdAndUser(conversationId: String): Flow<List<ParticipantWithContact>>
 
-     @Query("UPDATE participants SET role = :role WHERE userId = :userId AND conversationId = :conversationId")
-     suspend fun updateParticipantRole(userId: String, role: String, conversationId: String)
+    @Query("UPDATE participants SET role = :role WHERE userId = :userId AND conversationId = :conversationId")
+    suspend fun updateParticipantRole(userId: String, role: String, conversationId: String)
 
     @Query("DELETE FROM participants WHERE userId = :userId AND conversationId = :conversationId")
     suspend fun deleteParticipant(userId: String, conversationId: String): Int
+
+    @Query("SELECT role FROM participants WHERE conversationId = :conversationId AND userId = :userId")
+    suspend fun getParticipantRole(conversationId: String, userId: String): String
+
+    @Query("DELETE FROM participants WHERE userId IN (:userIds) AND conversationId = :conversationId")
+    suspend fun deleteParticipantsByUserIds(userIds: List<Int>, conversationId: String)
 
 }

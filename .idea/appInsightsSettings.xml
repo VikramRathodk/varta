@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.devvikram.varta" />
-                  <option name="mobileSdkAppId" value="1:812334211513:android:41b47d8f4ba1cb1d755668" />
-                  <option name="projectId" value="varta-a7be6" />
-                  <option name="projectNumber" value="812334211513" />
+                  <option name="appId" value="PLACEHOLDER" />
+                  <option name="mobileSdkAppId" value="" />
+                  <option name="projectId" value="" />
+                  <option name="projectNumber" value="" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import com.devvikram.varta.data.firebase.models.FContact
 import com.devvikram.varta.data.firebase.models.conversation.Conversation
+import com.devvikram.varta.data.firebase.models.conversation.LastMessage
 import com.devvikram.varta.data.firebase.models.conversation.Participant
 import com.devvikram.varta.data.firebase.models.conversation.UserPreference
 import com.devvikram.varta.data.firebase.models.enums.MessageType
@@ -15,6 +16,7 @@ import com.devvikram.varta.data.room.models.RoomForwardMetadata
 import com.devvikram.varta.data.room.models.RoomMessage
 import com.devvikram.varta.data.room.models.RoomParticipant
 import com.devvikram.varta.data.room.models.RoomUserPreference
+import com.devvikram.varta.utility.AppUtils
 import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
@@ -66,7 +68,7 @@ object ModelMapper {
     }
 
     // 3. ChatMessage to RoomMessage
-    fun mapToRoomMessage(chatMessage: ChatMessage): RoomMessage {
+    fun mapToRoomMessage(chatMessage: ChatMessage, existingMessage: RoomMessage? = null): RoomMessage {
         return RoomMessage(
             messageId = chatMessage.messageId,
             conversationId = chatMessage.conversationId,
@@ -77,7 +79,7 @@ object ModelMapper {
             timestamp = chatMessage.timestamp ?: 0L,
             mediaUrl = chatMessage.mediaUrl,
             thumbnailUrl = chatMessage.thumbnailUrl,
-            mediaSize = chatMessage.mediaSize,
+            mediaSize = chatMessage.mediaSize ?: existingMessage?.mediaSize,
             mediaDurationInSeconds = chatMessage.mediaDurationInSeconds,
             isEdited = chatMessage.isEdited,
             reactions = chatMessage.reactions.mapValues { it.value },
@@ -99,11 +101,16 @@ object ModelMapper {
                 )
             },
             forwardCount = chatMessage.forwardCount,
-            localFilePath = null, // Placeholder for downloaded file path
+            localFilePath = null,
             isDownloaded = false,
             mediaType = chatMessage.mediaType,
             mediaName = chatMessage.mediaName,
-        )
+            mediaLocalUrl = existingMessage?.mediaLocalUrl,
+            mediaStatus = existingMessage?.mediaStatus.toString(),
+            uploadProgress = existingMessage?.uploadProgress ?: 0,
+            isUploaded = chatMessage.isUploaded,
+
+            )
     }
 
     // 4. RoomMessage to ChatMessage
@@ -194,6 +201,22 @@ object ModelMapper {
             profilePic = fContact.profilePic ?: "",
             userStatus = fContact.userStatus ?: false,
             localProfilePicPath = localProfilePicPath
+        )
+    }
+    fun mapToLastMessage(message: RoomMessage): LastMessage {
+
+
+        return LastMessage(
+            timestamp = message.timestamp,
+            mediaUrl = message.mediaUrl,
+            mediaType = message.mediaType,
+            messageId = message.messageId,
+            senderId =message.senderId,
+            senderName = message.senderName.toString(),
+            messageType = AppUtils.getMessageType(message.messageType),
+            text = message.text,
+            isReadBy = message.isReadBy,
+            isReceivedBy = message.isReceivedBy,
         )
     }
 }

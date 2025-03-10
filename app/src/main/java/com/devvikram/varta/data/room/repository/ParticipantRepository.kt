@@ -17,9 +17,10 @@ import kotlinx.coroutines.sync.withLock
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
 @Singleton
 class ParticipantRepository @Inject constructor(private val participantDao: ParticipantDao,
-                                                 private val firebaseRepository: FirebaseConversationRepository) {
+                                                private val firebaseRepository: FirebaseConversationRepository) {
     private val updateMutex = Mutex()
     fun insertParticipants(participants: List<RoomParticipant>) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -78,24 +79,19 @@ class ParticipantRepository @Inject constructor(private val participantDao: Part
 
     suspend fun updateRole(participant: RoomParticipant) {
         Log.d(TAG, "updateRole: $participant")
-            participantDao.updateParticipantRole(participant.userId, participant.role.toString(), conversationId = participant.conversationId)
-            try {
-                firebaseRepository.updateParticipantRole(conversationId = participant.conversationId,ModelMapper.mapToParticipant(participant))
-            } catch (e: Exception) {
-                Log.e(TAG, "Error updating participant role: ${e.message}", e)
-            }
+        participantDao.updateParticipantRole(participant.userId.toString(), participant.role.toString(), conversationId = participant.conversationId)
+        try {
+            firebaseRepository.updateParticipantRole(conversationId = participant.conversationId,ModelMapper.mapToParticipant(participant))
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating participant role: ${e.message}", e)
+        }
     }
 
     suspend fun deleteParticipant(conversationId: String, userId: String) {
         Log.d(TAG, "deleteParticipant: ")
         val deletedRows = participantDao.deleteParticipant(userId, conversationId)
         Log.d("TAG", "Rows deleted: $deletedRows")
-        try {
-                firebaseRepository.removeParticipantFromConversation(conversationId, userId)
-            } catch (e: Exception) {
-                Log.e(TAG, "Error removing participant from conversation: ${e.message}", e)
 
-        }
     }
 
     fun insertParticipant(mapToRoomParticipant: RoomParticipant) {
@@ -117,6 +113,16 @@ class ParticipantRepository @Inject constructor(private val participantDao: Part
             } catch (e: Exception) {
                 Log.e(TAG, "Error updating participant role: ${e.message}", e)
             }
+        }
+    }
+
+    suspend fun getParticipantRole(conversationId: String, userId: String): String {
+        return participantDao.getParticipantRole(conversationId, userId)
+    }
+
+    fun deleteParticipantsByUserIds(userIds: List<Int>, conversationId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            participantDao.deleteParticipantsByUserIds(userIds, conversationId)
         }
     }
 }

@@ -93,7 +93,6 @@ fun SingleContactCard(
                 Text(
                     text = contactMultipleItem.contact.statusText ?: "|NA|",
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        color = colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Normal
                     ),
                     maxLines = 1,

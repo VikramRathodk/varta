@@ -11,4 +11,6 @@ data class LastMessage(
     val timestamp: Long,
     val mediaType: String? = null, // "image", "video", "audio", "file", or null for text messages
     val mediaUrl: String? = null, // URL for media content (can be null for text messages)
+    val isReadBy: Map<String, Long>, // Map of user IDs to timestamp when the message was read
+    val isReceivedBy: Map<String, Long>, // Map of user IDs to timestamp when the message was received
 )

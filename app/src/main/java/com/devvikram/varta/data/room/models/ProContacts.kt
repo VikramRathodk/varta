@@ -40,6 +40,9 @@ data class ProContacts(
     @ColumnInfo(name = "local_profile_pic_path")
     val localProfilePicPath: String = "",
 
+    @ColumnInfo(name = "conversation_id")
+    val conversationId: String = "",
+
     @ColumnInfo(name = "status_text")
     val statusText: String = "",
 )

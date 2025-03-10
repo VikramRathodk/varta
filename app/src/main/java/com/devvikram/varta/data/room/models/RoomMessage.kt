@@ -14,6 +14,7 @@ data class RoomMessage(
     val text: String? = null, // Message text (optional for media-only messages)
     val timestamp: Long, // Message timestamp in epoch milliseconds
     val mediaUrl: String? = null, // URL for media files
+    val mediaLocalUrl : String? = null, // URL for media files
     val thumbnailUrl: String? = null, // Thumbnail URL for media previews
     val mediaSize: Long? = null, // File size in bytes for media
     val mediaType: String? = null, // MIME type for media files
@@ -33,8 +34,11 @@ data class RoomMessage(
     val localFilePath: String? = null, // Local path for downloaded media files
     val isDownloaded: Boolean = false, // Flag indicating if the media file has been downloaded
     val isUploaded: Boolean = false, // Flag indicating if the media file has been uploaded
+    val mediaStatus : String = "IDEAL", //Media Status of the message  ( IDEAL, UPLOADING, UPLOADED, FAILED)( IDEAL , DOWNLOADING, DOWNLOADED, FAILED))
     val uploadProgress: Int = 0,// Upload progress percentage (0-100)
     val downloadProgress: Int = 0,// Download progress percentage (0-100)
     val isFailed: Boolean = false, // Flag indicating if the message failed to send
-    val lastModifiedAt: Long = System.currentTimeMillis()
+    val lastModifiedAt: Long = System.currentTimeMillis(),
+    val syncStatus: Boolean = false, //
+    val notificationReceived: Boolean = false, // Flag indicating if the message was received via notification
 )
